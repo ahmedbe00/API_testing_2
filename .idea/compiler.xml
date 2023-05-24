@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="RestAssuredPracticeQAmp" />
+        <module name="Task2" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="API_testing_2" target="19" />
+      <module name="RestAssuredPracticeQAmp" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

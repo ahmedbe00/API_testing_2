@@ -1,0 +1,267 @@
+{
+	"info": {
+		"_postman_id": "2573b8e0-0de0-4edd-b8d4-4d9faeb2421f",
+		"name": "PlaceLabDemo-DataExtraction",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24008468",
+		"_collection_link": "https://galactic-space-608894.postman.co/workspace/QAMP2023~1a5a43d1-7498-46bb-a827-52082927168a/collection/24008468-2573b8e0-0de0-4edd-b8d4-4d9faeb2421f?action=share&creator=24008468&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Obtaining auth token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response contains api_token\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"api_token\");\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"api_token\", jsonData.api_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "{{validEmail}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{validPassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{demoPlaceLabURL}}/api/v2/sessions"
+			},
+			"response": []
+		},
+		{
+			"name": "Creating report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response contains id\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Value of state is CREATED\", function () {\r",
+							"    pm.expect(jsonData.state).to.eql(\"CREATED\");\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"report_id\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{api_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Berbic/Downloads/data_extraction_sample (5).txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{demoPlaceLabURL}}/api/v2/reports/data_extraction?country_code=US&name=DataExtraction",
+					"host": [
+						"{{demoPlaceLabURL}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"reports",
+						"data_extraction"
+					],
+					"query": [
+						{
+							"key": "country_code",
+							"value": "US"
+						},
+						{
+							"key": "name",
+							"value": "DataExtraction"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtaining report status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response contains state\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"state\");\r",
+							"});\r",
+							"\r",
+							"if (jsonData.state != \"FINISHED\") {\r",
+							"    retryRequest();\r",
+							"    return;\r",
+							"} else {\r",
+							"    validateResponse();\r",
+							"    return;\r",
+							"}\r",
+							"\r",
+							"function retryRequest() {\r",
+							"    if (jsonData.state != \"INVALID FILE\") {\r",
+							"        postman.setNextRequest(pm.info.requestId);\r",
+							"    } else {\r",
+							"        validateResponse();\r",
+							"        return;\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"function validateResponse() {\r",
+							"    pm.test(\"Verify response\", function () {\r",
+							"        pm.response.to.have.status(200);\r",
+							"        pm.expect(jsonData.state).to.be.a('string');\r",
+							"        pm.expect(jsonData.state).to.be.eqls('FINISHED');\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{api_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": "{{demoPlaceLabURL}}/api/v2/reports/{{report_id}}/status"
+			},
+			"response": []
+		},
+		{
+			"name": "Downloading result file",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.environment.unset(\"report_id\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{api_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "{{demoPlaceLabURL}}/api/v2/reports/{{report_id}}/download"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
