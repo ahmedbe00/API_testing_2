@@ -4,7 +4,7 @@
     <parameter name="browser" value="chrome" />
     <test name="Login Chrome" >
         <classes>
-            <class name="placelab.tests" >
+            <class name="placelab.tests.LoginTestEmptyCredentials" >
             </class>
         </classes>
     </test>
